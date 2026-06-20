@@ -1,0 +1,4 @@
+interface:
+  display_name: "AIFBA Amazon A+ Image"
+  short_description: "Generate optimized Amazon A+ images with AIFBA."
+  default_prompt: "Use $aifba-amazon-aplus-image to generate the best Amazon A+ images for this product."

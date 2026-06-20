@@ -1,0 +1,4 @@
+interface:
+  display_name: "AIFBA Amazon Bullets"
+  short_description: "Optimize Amazon five bullet points with AIFBA."
+  default_prompt: "Use $aifba-amazon-bullets to optimize this Amazon listing's five bullet points."

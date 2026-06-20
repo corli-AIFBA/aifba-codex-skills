@@ -1,0 +1,4 @@
+interface:
+  display_name: "AIFBA Amazon Main Image"
+  short_description: "Generate optimized Amazon main images with AIFBA."
+  default_prompt: "Use $aifba-amazon-main-image to generate the best Amazon main images for this product."

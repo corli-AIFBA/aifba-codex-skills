@@ -1,0 +1,4 @@
+interface:
+  display_name: "AIFBA Amazon Ads Diagnosis"
+  short_description: "Diagnose Amazon ad reports with AIFBA."
+  default_prompt: "Use $aifba-amazon-ads-diagnosis to diagnose these Amazon advertising reports."

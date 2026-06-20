@@ -1,0 +1,4 @@
+interface:
+  display_name: "AIFBA Amazon Title"
+  short_description: "Optimize Amazon titles with AIFBA API."
+  default_prompt: "Use $aifba-amazon-title to optimize this Amazon listing title."

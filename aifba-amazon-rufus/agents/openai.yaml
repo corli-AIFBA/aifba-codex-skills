@@ -1,0 +1,4 @@
+interface:
+  display_name: "AIFBA Amazon Rufus"
+  short_description: "Optimize Amazon Rufus coverage with AIFBA."
+  default_prompt: "Use $aifba-amazon-rufus to optimize this Amazon listing for Rufus and Alexa-style discovery."

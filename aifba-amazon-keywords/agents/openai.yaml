@@ -1,0 +1,4 @@
+interface:
+  display_name: "AIFBA Amazon Keywords"
+  short_description: "Analyze Amazon keywords with AIFBA API."
+  default_prompt: "Use $aifba-amazon-keywords to analyze this Amazon product's keyword opportunities."

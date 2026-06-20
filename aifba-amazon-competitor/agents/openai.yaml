@@ -1,0 +1,4 @@
+interface:
+  display_name: "AIFBA Amazon Competitor"
+  short_description: "Analyze Amazon competitors with AIFBA API."
+  default_prompt: "Use $aifba-amazon-competitor to analyze this Amazon product's competitors."
