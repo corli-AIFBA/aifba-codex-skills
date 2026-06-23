@@ -2,6 +2,19 @@
 
 Thin Codex Skills for running AIFBA Amazon operations tasks. The analysis and generation engines remain on AIFBA servers; the public Skill folders validate inputs, call the authenticated API, poll task status, and return results to Codex.
 
+## Current Public Release
+
+- `v0.2.1`
+- GitHub install source: `https://github.com/corli-AIFBA/aifba-codex-skills`
+- Fallback ZIP: `https://aifba.xyz/assets/downloads/aifba-codex-skills-v0.2.1.zip`
+- SHA-256: `fceb5fbc3eb9a1a2592707a3520bbc56c444a2c27da6327ebd149182fe330266`
+- Setup guide: `https://aifba.xyz/blog/aifba-codex-amazon-skills.html`
+
+Patch note:
+
+- `v0.2.1` improves helper-script compatibility for stricter Python request and CA-bundle environments.
+- The Skills still require only Python 3 standard library. If `certifi` is already installed locally, the scripts use it automatically.
+
 ## Included Skills
 
 - `aifba-amazon-title`
