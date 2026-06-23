@@ -122,7 +122,7 @@ def main() -> None:
         payload=payload,
         idempotency_key=idem,
     )
-    if not args.no-poll:
+    if not args.no_poll:
         deadline = time.time() + max(30, args.timeout_seconds)
         while str(response.get("status") or "").lower() not in TERMINAL_STATUSES and time.time() < deadline:
             time.sleep(int(response.get("poll_after_seconds") or 8))
