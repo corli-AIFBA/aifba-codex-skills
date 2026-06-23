@@ -7,6 +7,7 @@ import mimetypes
 import os
 from pathlib import Path
 import shutil
+import ssl
 import sys
 import time
 import urllib.error
@@ -14,18 +15,44 @@ import urllib.request
 import uuid
 from typing import Any
 
+try:
+    import certifi
+except ImportError:
+    certifi = None
+
 
 TERMINAL_STATUSES = {"succeeded", "failed", "cancelled", "refunded"}
+DEFAULT_USER_AGENT = (
+    "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) "
+    "AppleWebKit/537.36 (KHTML, like Gecko) "
+    "Chrome/137.0.0.0 Safari/537.36"
+)
+
+
+def urlopen_with_defaults(req: urllib.request.Request, *, timeout: int):
+    context = None
+    if certifi is not None:
+        try:
+            context = ssl.create_default_context(cafile=certifi.where())
+        except Exception:
+            context = None
+    if context is not None:
+        return urllib.request.urlopen(req, timeout=timeout, context=context)
+    return urllib.request.urlopen(req, timeout=timeout)
 
 
 def request_json(method: str, url: str, *, api_key: str) -> dict[str, Any]:
     req = urllib.request.Request(
         url,
-        headers={"Accept": "application/json", "Authorization": f"Bearer {api_key}"},
+        headers={
+            "Accept": "application/json",
+            "Authorization": f"Bearer {api_key}",
+            "User-Agent": DEFAULT_USER_AGENT,
+        },
         method=method,
     )
     try:
-        with urllib.request.urlopen(req, timeout=60) as response:
+        with urlopen_with_defaults(req, timeout=60) as response:
             text = response.read().decode("utf-8")
             return json.loads(text) if text else {}
     except urllib.error.HTTPError as exc:
@@ -84,11 +111,12 @@ def create_run(
             "Authorization": f"Bearer {api_key}",
             "Content-Type": f"multipart/form-data; boundary={boundary}",
             "Idempotency-Key": idempotency_key,
+            "User-Agent": DEFAULT_USER_AGENT,
         },
         method="POST",
     )
     try:
-        with urllib.request.urlopen(req, timeout=180) as response:
+        with urlopen_with_defaults(req, timeout=180) as response:
             text = response.read().decode("utf-8")
             return json.loads(text) if text else {}
     except urllib.error.HTTPError as exc:
@@ -108,11 +136,14 @@ def download_artifacts(response: dict[str, Any], *, api_key: str, output_dir: Pa
         destination = run_dir / Path(str(artifact.get("name") or "aifba-ads-diagnosis.xlsx")).name
         req = urllib.request.Request(
             str(artifact["url"]),
-            headers={"Authorization": f"Bearer {api_key}"},
+            headers={
+                "Authorization": f"Bearer {api_key}",
+                "User-Agent": DEFAULT_USER_AGENT,
+            },
             method="GET",
         )
         try:
-            with urllib.request.urlopen(req, timeout=180) as source, destination.open("wb") as output:
+            with urlopen_with_defaults(req, timeout=180) as source, destination.open("wb") as output:
                 shutil.copyfileobj(source, output)
             artifact["local_path"] = str(destination)
         except (urllib.error.HTTPError, urllib.error.URLError) as exc:
