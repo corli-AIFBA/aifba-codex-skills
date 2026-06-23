@@ -4,6 +4,7 @@ from __future__ import annotations
 import argparse
 import json
 import os
+import ssl
 import sys
 import time
 import uuid
@@ -11,9 +12,19 @@ import urllib.error
 import urllib.request
 from typing import Any
 
+try:
+    import certifi
+except ImportError:
+    certifi = None
+
 
 DEFAULT_SKILL = "aifba-amazon-bullets"
 TERMINAL_STATUSES = {"succeeded", "failed", "cancelled", "refunded"}
+DEFAULT_USER_AGENT = (
+    "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) "
+    "AppleWebKit/537.36 (KHTML, like Gecko) "
+    "Chrome/137.0.0.0 Safari/537.36"
+)
 
 
 def parse_key_value_options(values: list[str]) -> dict[str, Any]:
@@ -29,6 +40,18 @@ def parse_key_value_options(values: list[str]) -> dict[str, Any]:
     return options
 
 
+def urlopen_with_defaults(req: urllib.request.Request, *, timeout: int):
+    context = None
+    if certifi is not None:
+        try:
+            context = ssl.create_default_context(cafile=certifi.where())
+        except Exception:
+            context = None
+    if context is not None:
+        return urllib.request.urlopen(req, timeout=timeout, context=context)
+    return urllib.request.urlopen(req, timeout=timeout)
+
+
 def request_json(
     method: str,
     url: str,
@@ -41,6 +64,7 @@ def request_json(
     headers = {
         "Accept": "application/json",
         "Authorization": f"Bearer {api_key}",
+        "User-Agent": DEFAULT_USER_AGENT,
     }
     if payload is not None:
         data = json.dumps(payload, ensure_ascii=False).encode("utf-8")
@@ -49,7 +73,7 @@ def request_json(
         headers["Idempotency-Key"] = idempotency_key
     req = urllib.request.Request(url, data=data, headers=headers, method=method)
     try:
-        with urllib.request.urlopen(req, timeout=60) as response:
+        with urlopen_with_defaults(req, timeout=60) as response:
             text = response.read().decode("utf-8")
             return json.loads(text) if text else {}
     except urllib.error.HTTPError as exc:
